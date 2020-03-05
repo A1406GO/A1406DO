@@ -17,4 +17,17 @@ jobs:
         find ./ -type d -exec mkdir -p ../docs/\{\} \;
         find ./ -iname "*.md" -type f -exec sh -c 'pandoc "${0}" -o "../docs/$(dirname ${0})/$(basename ${0%.md}.docx)"' {} \;
 
-
+    - name: Commit docs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config user.email "a@b.c"
+        git config user.name "$GITHUB_ACTOR"
+        git checkout master
+        sudo git pull origin master
+        sudo git add Release/iOS
+        sudo git add Release/Android
+        sudo git commit -m "[$GITHUB_WORKFLOW]Auto commit from Github Action - Auto Markdown to Word-docx"
+        git remote set-url --push origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+        git push origin master
+        
