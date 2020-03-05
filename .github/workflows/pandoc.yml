@@ -1,6 +1,6 @@
 name: Auto Markdown to Word-docx
 
-on:[push]
+on: [push]
 
 jobs:
   build:
