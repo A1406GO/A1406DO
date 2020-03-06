@@ -19,8 +19,8 @@ jobs:
 
     - name: commit
       run: |
-        git config --global user.email github-action@users.noreply.github.com
-        git config --global user.name github-action
+        git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+        git config --global user.name github-actions[bot]
         git add .
         git commit -m "Auto commit from [Auto Markdown to Word-docx]" -a
         
