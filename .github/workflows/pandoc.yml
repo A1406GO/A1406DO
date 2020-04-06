@@ -9,13 +9,16 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Install pandoc
-      run: sudo apt-get install pandoc
+      run: |
+        sudo apt-get install pandoc
+        sudo apt-get install npm
+        npm install --global mermaid-filter
       
     - name: Run pandoc
       run: |
         cd mds
         find ./ -type d -exec mkdir -p ../docs/\{\} \;
-        find ./ -iname "*.md" -type f -exec sh -c 'pandoc "${0}" -o "../docs/$(dirname ${0})/$(basename ${0%.md}.docx)"' {} \;
+        find ./ -iname "*.md" -type f -exec sh -c 'pandoc "${0}" -o "../docs/$(dirname ${0})/$(basename ${0%.md}.docx)" -F mermaid-filter' {} \;
 
     - name: commit
       run: |
