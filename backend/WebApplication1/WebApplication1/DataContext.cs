@@ -14,9 +14,9 @@ namespace WebApplication1
 
         }
 
-        public DbSet<EngineerInfo> Engineerinfo { get; set; }
-        public DbSet<UserInfo> Userinfo { get; set; }
-        public DbSet<ModifyInfo> Modifyinfo { get; set; }
+        public DbSet<EngineerInfo> EngineerInfo { get; set; }
+        public DbSet<UserInfo> UserInfo { get; set; }
+        public DbSet<ModifyInfo> ModifyInfo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

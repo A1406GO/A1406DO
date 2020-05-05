@@ -10,7 +10,7 @@ namespace WebApplication1.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        public string Time { get; set; }
+        public DateTime Time { get; set; }
         public string Username { get; set; }
         public string Modify { get; set; }
     }

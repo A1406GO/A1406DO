@@ -21,10 +21,10 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public List<EngineerInfo> Gets()
+        public List<EngineerInfo> Get()
         {
             _context.Database.EnsureCreated();
-            var users = _context.Engineerinfo;
+            var users = _context.EngineerInfo;
             List<EngineerInfo> items = new List<EngineerInfo>();
             foreach (var item in users)
             {
@@ -35,10 +35,10 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public List<EngineerInfo> GetsById(int id)
+        public List<EngineerInfo> GetById(int id)
         {
             _context.Database.EnsureCreated();
-            var users = _context.Engineerinfo.Where(s => s.ID == id).ToList(); 
+            var users = _context.EngineerInfo.Where(s => s.ID == id).ToList(); 
             List<EngineerInfo> items = new List<EngineerInfo>();
             foreach (var item in users)
             {
@@ -49,10 +49,10 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public List<EngineerInfo> GetsByName(string name)
+        public List<EngineerInfo> GetByName(string name)
         {
             _context.Database.EnsureCreated();
-            var users = _context.Engineerinfo.Where(s => s.Name == name).ToList();
+            var users = _context.EngineerInfo.Where(s => s.Name == name).ToList();
             List<EngineerInfo> items = new List<EngineerInfo>();
             foreach (var item in users)
             {
@@ -60,13 +60,50 @@ namespace WebApplication1.Controllers
             }
             return items;
         }
+
+        [HttpPost]
+        public List<EngineerInfo> SortById([FromBody]List<EngineerInfo> Newengineer)
+        {
+            List<EngineerInfo> items = Newengineer;
+            if(items!=null)
+            {
+                items = items.OrderBy(u => u.ID).ToList();
+            }
+            return items;
+        }
+
+        [HttpPost]
+        public List<EngineerInfo> SortByName([FromBody]List<EngineerInfo> Newengineer)
+        {
+            List<EngineerInfo> items = Newengineer;
+            if (items != null)
+            {
+                items = items.OrderBy(u => u.Name).ThenBy( u => u.ID ).ToList();
+            }
+            return items;
+        }
+
+
+        [HttpPost]
+        public List<EngineerInfo> SortBySeniority([FromBody]List<EngineerInfo> Newengineer)
+        {
+            List<EngineerInfo> items = Newengineer;
+            if (items != null)
+            {
+                items = items.OrderByDescending(u => u.Seniority).ThenBy(u => u.ID).ToList();
+            }
+            return items;
+        }
+
+
+
 
         /*https://localhost:5001/Engineer/Add?name=马佳进&sex=男&brithday=1999-01-01&education=本科&hometown=浙江&address=衢州&phonenumber=17788579131&seniority=1&wage=2000.5
              */
         [HttpPost]
         public bool Add([FromBody]EngineerInfo Newengineer)
         {
-            var state = GetsById(Newengineer.ID);
+            var state = GetById(Newengineer.ID);
             if (state != null)
             {
                 return false;
@@ -124,10 +161,27 @@ namespace WebApplication1.Controllers
             //_context.SaveChanges();
             //return 200;
             var state = false;
-            var u = _context.Engineerinfo.SingleOrDefault(s => s.ID == id);
+            var u = _context.EngineerInfo.SingleOrDefault(s => s.ID == id);
             if(u!=null)
             {
-                _context.Engineerinfo.Remove(u);
+                _context.EngineerInfo.Remove(u);
+                state = _context.SaveChanges() > 0;
+            }
+            return state;
+        }
+
+
+        [HttpPost]
+        public bool DeleteAll()
+        {
+            //_context.SaveChanges();
+            //return 200;
+            var state = false;
+            var users = _context.EngineerInfo.ToList();
+
+            foreach (var item in users)
+            {
+                _context.EngineerInfo.Remove(item);
                 state = _context.SaveChanges() > 0;
             }
             return state;
@@ -135,11 +189,15 @@ namespace WebApplication1.Controllers
 
         //https://localhost:5001/Engineer/Put?id=11
         [HttpPost]
-        public int Put(int id,[FromBody]EngineerInfo Newengineer)
+        public bool Put(int id,[FromBody]EngineerInfo Newengineer)
         {
-            var u = _context.Engineerinfo.Update(Newengineer);
-            _context.SaveChanges();
-            return 200;
+            //var state = false;
+            var u = _context.EngineerInfo.Update(Newengineer);
+            if(u==null)
+            {
+                return false;
+            }
+            return _context.SaveChanges() > 0;
         }
 
 
