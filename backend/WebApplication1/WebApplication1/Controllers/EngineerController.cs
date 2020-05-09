@@ -104,7 +104,7 @@ namespace WebApplication1.Controllers
         public bool Add([FromBody]EngineerInfo Newengineer)
         {
             var state = GetById(Newengineer.ID);
-            if (state != null)
+            if (state.Count != 0) 
             {
                 return false;
             }
