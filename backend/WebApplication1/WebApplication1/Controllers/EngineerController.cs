@@ -102,17 +102,16 @@ namespace WebApplication1.Controllers
         /*https://localhost:5001/Engineer/Add?name=马佳进&sex=男&brithday=1999-01-01&education=本科&hometown=浙江&address=衢州&phonenumber=17788579131&seniority=1&wage=2000.5
              */
         [HttpPost]
-        public bool Add([FromBody]EngineerInfo Newengineer)
+        public IActionResult Add([FromBody]EngineerInfo Newengineer)
         {
             var state = GetById(Newengineer.ID);
             if (state.Count != 0) 
             {
-                return false;
+                return Json(new { success = false });
             }
             _context.Add(Newengineer);
 
-            return _context.SaveChanges() > 0;
-
+            return Json(new { success = _context.SaveChanges() > 0 });
         }
 
         ///*https://localhost:5001/Engineer/IdAdd?id=1000&name=马佳进&sex=男&brithday=1999-01-01&education=本科&hometown=浙江&address=衢州&phonenumber=17788579131&seniority=1&wage=2000.5
@@ -157,7 +156,7 @@ namespace WebApplication1.Controllers
         //https://localhost:5001/Engineer/DeleteById?id=10
 
         [HttpPost]
-        public bool DeleteById(int id)
+        public IActionResult DeleteById(int id)
         {
             //_context.SaveChanges();
             //return 200;
@@ -168,12 +167,12 @@ namespace WebApplication1.Controllers
                 _context.EngineerInfo.Remove(u);
                 state = _context.SaveChanges() > 0;
             }
-            return state;
+            return Json(new { success = state });
         }
 
 
         [HttpPost]
-        public bool DeleteAll()
+        public IActionResult DeleteAll()
         {
             //_context.SaveChanges();
             //return 200;
@@ -185,20 +184,20 @@ namespace WebApplication1.Controllers
                 _context.EngineerInfo.Remove(item);
                 state = _context.SaveChanges() > 0;
             }
-            return state;
+            return Json(new { success = state });
         }
 
         //https://localhost:5001/Engineer/Put?id=11
         [HttpPost]
-        public bool Put(int id,[FromBody]EngineerInfo Newengineer)
+        public IActionResult Put(int id,[FromBody]EngineerInfo Newengineer)
         {
             //var state = false;
             var u = _context.EngineerInfo.Update(Newengineer);
-            if(u==null)
+            if (u == null) 
             {
-                return false;
+                return Json(new { success = false });
             }
-            return _context.SaveChanges() > 0;
+            return Json(new { success = _context.SaveChanges() > 0 });
         }
 
 

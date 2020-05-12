@@ -48,22 +48,22 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost]
-        public bool Add([FromBody]UserInfo NewUser)
+        public IActionResult Add([FromBody]UserInfo NewUser)
         {
             var state = GetById(NewUser.ID);
             if (state != null)
             {
-                return false;
+                return Json(new { sucess = false });
             }
             _context.Add(NewUser);
 
-            return _context.SaveChanges() > 0;
+            return Json(new { sucess = _context.SaveChanges() > 0 });
 
         }
 
 
         [HttpPost]
-        public bool DeleteById(int id)
+        public IActionResult DeleteById(int id)
         {
             //_context.SaveChanges();
             //return 200;
@@ -74,19 +74,19 @@ namespace WebApplication1.Controllers
                 _context.UserInfo.Remove(u);
                 state = _context.SaveChanges() > 0;
             }
-            return state;
+            return Json(new { sucess = state });
         }
 
 
         [HttpPost]
-        public bool Put(int id, [FromBody]UserInfo NewUser)
+        public IActionResult Put(int id, [FromBody]UserInfo NewUser)
         {
             var u = _context.UserInfo.Update(NewUser);
             if (u == null)
             {
-                return false;
+                return Json(new { sucess = false });
             }
-            return _context.SaveChanges() > 0;
+            return Json(new { sucess = _context.SaveChanges() > 0 });
         }
     }
 }
