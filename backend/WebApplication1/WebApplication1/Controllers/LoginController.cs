@@ -20,9 +20,9 @@ namespace WebApplication1.Controllers
             this.loginService = loginService;
         }
         //真正的调用的判断函数，返回的是json
-        //https://localhost:5001/Login/Loginname?username=1&password=1
+        //https://localhost:5001/Login/?username=1&password=1
         [HttpGet]
-        public IActionResult Loginname(string username,string password)
+        public IActionResult Index(string username,string password)
         {
             //获取结果
             var result = loginService.Login(username, password);
@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
                 var Result1 = new { result = false, info = result };
                 return Json(Result1);
             }
-            var Result2 = new { result = true, info = result };
+            var Result2 = new { result = true, token = result };
             return Json(Result2);
         }
 

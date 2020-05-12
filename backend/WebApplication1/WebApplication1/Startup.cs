@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Middleware;
+using WebApplication1.Models;
 using WebApplication1.Services;
 
 namespace WebApplication1
@@ -36,7 +38,13 @@ namespace WebApplication1
             services.AddDbContext<DataContext>(options => options.UseMySQL(Configuration.GetConnectionString("dbconn")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //将LoginService注入
+            //services.AddSingleton<LoginService>();
+            services.AddSingleton<Dictionary<long, UserInfo>>();
             services.AddScoped(typeof(LoginService));
+
+            //将中间件注入到容器中
+            services.AddScoped<LoginMiddleware>();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +63,8 @@ namespace WebApplication1
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseMiddleware<LoginMiddleware>();
 
             app.UseMvc(routes =>
             {

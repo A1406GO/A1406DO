@@ -14,10 +14,10 @@ namespace WebApplication1.Services
         private Random random;
         private readonly DataContext _context;
         //初始化
-        public LoginService(DataContext context)
+        public LoginService(DataContext context, Dictionary<long, UserInfo> loginedUsers)
         {
             random = new Random(DateTime.Now.Millisecond);
-            loginedUsers = new Dictionary<long, UserInfo>();
+            this.loginedUsers = loginedUsers;
             this._context = context;
         }
         //登录函数，输入名字密码，如果正确返回一个token，否则反正错误的原因
@@ -49,7 +49,10 @@ namespace WebApplication1.Services
             return token.ToString();
         }
 
-
+        public bool ValidToken(long token)
+        {
+            return loginedUsers.ContainsKey(token);
+        }
 
 
     }
