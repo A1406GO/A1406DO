@@ -25,15 +25,17 @@ namespace WebApplication1.Controllers
         public IActionResult Index(string username,string password)
         {
             //获取结果
-            var result = loginService.Login(username, password);
-            //判断结果
-            if(result == "用户名不存在"|| result == "密码错误" || result == "此用户已经登录")
+            try
             {
-                var Result1 = new { result = false, info = result };
-                return Json(Result1);
+                var result = loginService.Login(username, password);
+                var Result = new { result = true, token = result };
+                return Json(Result);
             }
-            var Result2 = new { result = true, token = result };
-            return Json(Result2);
+            catch(Exception e)
+            {
+                var Result = new { result = false, info = e.Message };
+                return Json(Result);
+            }
         }
 
     }

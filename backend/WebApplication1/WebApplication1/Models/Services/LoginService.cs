@@ -29,15 +29,15 @@ namespace WebApplication1.Services
             //失败的情况
             if(user == null)
             {
-                return "用户名不存在";
+                throw new Exception("用户名不存在！");
             }
             if(user.Password != password)
             {
-                return "密码错误";
+                throw new Exception("密码不正确！");
             }
             if(loginedUsers.ContainsValue(user))
             {
-                return "此用户已登录";
+                throw new Exception("此用户已登录！");
             }
             //成功则随机生成token
             long token = DateTime.Now.Ticks;
