@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Middleware;
 using WebApplication1.Models;
+using WebApplication1.Models.Services;
 using WebApplication1.Services;
 
 namespace WebApplication1
@@ -39,7 +40,7 @@ namespace WebApplication1
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //将LoginService注入
             //services.AddSingleton<LoginService>();
-            services.AddSingleton<Dictionary<long, UserInfo>>();
+            services.AddSingleton<UserService>();
             services.AddScoped(typeof(LoginService));
 
             //将中间件注入到容器中

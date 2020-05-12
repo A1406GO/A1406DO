@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using WebApplication1.Models.Services;
 
 namespace WebApplication1.Services
 {
@@ -10,11 +11,11 @@ namespace WebApplication1.Services
     {
         //设置登录类
         //设置登录类所需的变量
-        private Dictionary<long, UserInfo> loginedUsers;
         private Random random;
         private readonly DataContext _context;
+        private UserService loginedUsers;
         //初始化
-        public LoginService(DataContext context, Dictionary<long, UserInfo> loginedUsers)
+        public LoginService(DataContext context, UserService loginedUsers)
         {
             random = new Random(DateTime.Now.Millisecond);
             this.loginedUsers = loginedUsers;
@@ -35,13 +36,13 @@ namespace WebApplication1.Services
             {
                 throw new Exception("密码不正确！");
             }
-            if(loginedUsers.ContainsValue(user))
+            if(loginedUsers.ContainsUser(user))
             {
                 throw new Exception("此用户已登录！");
             }
             //成功则随机生成token
             long token = DateTime.Now.Ticks;
-            while (loginedUsers.ContainsKey(token))
+            while (loginedUsers.ContainsToken(token))
             {
                 token ^= random.Next();
             }
@@ -49,10 +50,10 @@ namespace WebApplication1.Services
             return token.ToString();
         }
 
-        public bool ValidToken(long token)
-        {
-            return loginedUsers.ContainsKey(token);
-        }
+        //public bool ValidToken(long token)
+        //{
+        //    return loginedUsers.ContainsKey(token);
+        //}
 
 
     }

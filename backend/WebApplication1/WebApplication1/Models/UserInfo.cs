@@ -14,5 +14,23 @@ namespace WebApplication1.Models
         public string Password { get; set; }
         public string ControllerName { get; set; }
         public int Power { get; set; }
+
+        public override int GetHashCode()
+        {
+            return ID;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+
+            if (ReferenceEquals(this, obj)) return true;
+
+            if (obj.GetType() != this.GetType()) return false;
+            UserInfo userInfo = (UserInfo)obj;
+            return userInfo.ID == this.ID;
+        }
+
+
     }
 }

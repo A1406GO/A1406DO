@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using WebApplication1.Models.Services;
 using WebApplication1.Services;
 
 namespace WebApplication1.Middleware
@@ -12,14 +13,16 @@ namespace WebApplication1.Middleware
     public class LoginMiddleware:IMiddleware
     {
         private LoginService loginService;
+        private UserService loginedUsers;
 
         private static HashSet<PathString> whiteList = new HashSet<PathString>()
         {
             new PathString("/login")
         };
-        public LoginMiddleware(LoginService loginService)
+        public LoginMiddleware(LoginService loginService, UserService loginedUsers)
         {
             this.loginService = loginService;
+            this.loginedUsers = loginedUsers;
         }
         
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -37,7 +40,7 @@ namespace WebApplication1.Middleware
 
             if ((!context.Request.Headers.TryGetValue("Authorization", out var result)) ||
                 (!long.TryParse(result.ToString(), out var token)) ||
-               (!loginService.ValidToken(token)))
+               (!loginedUsers.ValidToken(token)))
             {
                 context.Response.StatusCode = 401;
                 return;
