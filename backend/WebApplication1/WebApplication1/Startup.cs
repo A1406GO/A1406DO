@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Services;
 
 namespace WebApplication1
 {
@@ -34,6 +35,8 @@ namespace WebApplication1
 
             services.AddDbContext<DataContext>(options => options.UseMySQL(Configuration.GetConnectionString("dbconn")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //将LoginService注入
+            services.AddScoped(typeof(LoginService));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -37,6 +37,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public List<EngineerInfo> GetById(int id)
         {
+            //var providedApiKey = Request.Headers["testtoken"].ToString();
             _context.Database.EnsureCreated();
             var users = _context.EngineerInfo.Where(s => s.ID == id).ToList(); 
             List<EngineerInfo> items = new List<EngineerInfo>();
