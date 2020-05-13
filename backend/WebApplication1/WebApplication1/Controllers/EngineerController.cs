@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using WebApplication1.Models.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -13,10 +14,14 @@ namespace WebApplication1.Controllers
     public class EngineerController: Controller
     {
         private readonly DataContext _context;
+        private UserService userservice;
+        private Modify modify;
 
-        public EngineerController(DataContext context)
+        public EngineerController(DataContext context, UserService userservice, Modify modify)
         {
             this._context = context;
+            this.userservice = userservice;
+            this.modify = modify;
         }
 
 
@@ -109,57 +114,32 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { success = false });
             }
-            _context.Add(Newengineer);
+            try
+            {
+                _context.Add(Newengineer);
+                _context.SaveChanges();
+            }
+            catch(Exception e)
+            {
+                return Json(new { success = false });
+            }
+            //成功时执行以下操作
+            //获取header中的token
+            var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+            //获取日志信息
+            ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "Engineer", 1, providedApiKey); 
+            //保存日志信息
+            _context.Add(NewModify);
 
             return Json(new { success = _context.SaveChanges() > 0 });
         }
 
-        ///*https://localhost:5001/Engineer/IdAdd?id=1000&name=马佳进&sex=男&brithday=1999-01-01&education=本科&hometown=浙江&address=衢州&phonenumber=17788579131&seniority=1&wage=2000.5
-        //     */
-        //public bool IdAdd(int id, string name, string sex, string brithday, string education,
-        //    string hometown, string address, string phonenumber, int seniority, Double wage)
-        //{
-
-        //    var state = GetsById(id);
-        //    if(state!=null)
-        //    {
-        //        return false;
-        //    }
-
-        //    DateTime _brithday;
-        //    DateTime.TryParse(brithday, out _brithday);
-        //    EngineerInfo Newengineer = new EngineerInfo();
-        //    //if()
-        //    Newengineer.ID = id;
-        //    Newengineer.Name = name;
-        //    Newengineer.Sex = sex;
-        //    Newengineer.Birthday = _brithday;
-        //    Newengineer.Education = education;
-        //    Newengineer.Hometown = hometown;
-        //    Newengineer.Address = address;
-        //    Newengineer.PhoneNumber = phonenumber;
-        //    Newengineer.Seniority = seniority;
-        //    Newengineer.Wage = wage;
-
-        //    _context.Add(Newengineer);
-
-        //    return _context.SaveChanges() > 0; 
-
-        //}
 
 
-
-
-
-
-
-        //https://localhost:5001/Engineer/DeleteById?id=10
 
         [HttpPost]
         public IActionResult DeleteById(int id)
         {
-            //_context.SaveChanges();
-            //return 200;
             var state = false;
             var u = _context.EngineerInfo.SingleOrDefault(s => s.ID == id);
             if(u!=null)
@@ -174,8 +154,6 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult DeleteAll()
         {
-            //_context.SaveChanges();
-            //return 200;
             var state = false;
             var users = _context.EngineerInfo.ToList();
 
@@ -191,7 +169,6 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Put(int id,[FromBody]EngineerInfo Newengineer)
         {
-            //var state = false;
             var u = _context.EngineerInfo.Update(Newengineer);
             if (u == null) 
             {
@@ -201,26 +178,64 @@ namespace WebApplication1.Controllers
         }
 
 
-        //[HttpPost]
-        ////https://localhost:5001/Engineer/DeleteByName?name=周则千
-        //public string DeleteByName(string name)
-        //{
-        //    var u = _context.Engineerinfo.Where(s => s.Name==name).ToList();
-        //    //_context.SaveChanges();
-        //    //return 200;
-        //    try
-        //    {
-        //        foreach (var item in u)
-        //        {
-        //            _context.Engineerinfo.Remove(item);
-        //        }
-        //        _context.SaveChanges();
-        //    }
-        //    catch (SqlException ex)
-        //    {
-        //        return "fail";
-        //    }
-        //    return "succeed";
-        //}
+        [HttpPost]
+        public IActionResult DataChange([FromBody]ChangedEngineerData Data)
+        {
+            //分别获取增加，删除，更新数据的信息
+            List<EngineerInfo> AddengineerInfos = Data.AddengineerInfos;
+            List<EngineerInfo> DeleteengineerInfos = Data.DeleteengineerInfos;
+            List<EngineerInfo> UpdataengineerInfos = Data.UpdataengineerInfos;
+            try
+            {
+                //获取token
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //添加数据
+                foreach (var item in AddengineerInfos)
+                {
+                    _context.EngineerInfo.Add(item);
+                }
+                //删除数据
+                foreach (var item in DeleteengineerInfos)
+                {
+                    var Deletedata = _context.EngineerInfo.SingleOrDefault(s => s.ID == item.ID);
+                    _context.EngineerInfo.Remove(Deletedata);
+                }
+                //更新数据
+                foreach (var item in UpdataengineerInfos)
+                {
+                    _context.EngineerInfo.Update(item);
+                }
+
+                //获取并保存增加数据的日志的信息
+                //获取日志信息
+                ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "Engineer", AddengineerInfos.Count(), providedApiKey);
+                //保存日志信息
+                _context.ModifyInfo.Add(NewModify);
+
+                //获取并保存删除数据的日志的信息
+                NewModify = modify.DelectInfo(DateTime.Now, "Engineer", DeleteengineerInfos.Count(), providedApiKey);
+                _context.ModifyInfo.Add(NewModify);
+                //获取并保存更新数据的日志的信息
+                NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdataengineerInfos.Count(), providedApiKey);
+                _context.ModifyInfo.Add(NewModify);
+
+                //保存数据，如果以上有一个出错那么全部不执行
+                _context.SaveChanges();
+
+
+
+
+
+
+                //_context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false });
+            }
+            return Json(new { success = true });
+        }
+
+
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using WebApplication1.Models.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -11,10 +12,14 @@ namespace WebApplication1.Controllers
     public class UserController:Controller
     {
         private readonly DataContext _context;
+        private UserService userservice;
+        private Modify modify;
 
-        public UserController(DataContext context)
+        public UserController(DataContext context, UserService userservice, Modify modify)
         {
             this._context = context;
+            this.userservice = userservice;
+            this.modify = modify;
         }
 
 
@@ -65,8 +70,6 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult DeleteById(int id)
         {
-            //_context.SaveChanges();
-            //return 200;
             var state = false;
             var u = _context.UserInfo.SingleOrDefault(s => s.ID == id);
             if (u != null)
@@ -87,6 +90,60 @@ namespace WebApplication1.Controllers
                 return Json(new { sucess = false });
             }
             return Json(new { sucess = _context.SaveChanges() > 0 });
+        }
+
+
+
+        [HttpPost]
+        public IActionResult DataChange([FromBody]ChangedUserData Data)
+        {
+            //分别获取增加，删除，更新数据的信息
+            List<UserInfo> AdduserInfos = Data.AdduserInfos;
+            List<UserInfo> DeleteuserInfos = Data.DeleteuserInfos;
+            List<UserInfo> UpdatauserInfos = Data.UpdatauserInfos;
+            try
+            {
+                //获取token
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //添加数据
+                foreach (var item in AdduserInfos)
+                {
+                    _context.UserInfo.Add(item);
+                }
+                //删除数据
+                foreach (var item in DeleteuserInfos)
+                {
+                    var Deletedata = _context.UserInfo.SingleOrDefault(s => s.ID == item.ID);
+                    _context.UserInfo.Remove(Deletedata);
+                }
+                //更新数据
+                foreach (var item in UpdatauserInfos)
+                {
+                    _context.UserInfo.Update(item);
+                }
+               
+                //获取增加数据的日志信息
+                ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "User", AdduserInfos.Count(), providedApiKey);
+                //日志信息加入
+                _context.Add(NewModify);
+
+                //获取删除数据的日志信息
+                NewModify = modify.DelectInfo(DateTime.Now, "Engineer", DeleteuserInfos.Count(), providedApiKey);
+                //日志信息加入
+                _context.Add(NewModify);
+
+                //获取更新数据的日志信息
+                NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdatauserInfos.Count(), providedApiKey);
+                //日志信息加入
+                _context.Add(NewModify);
+                //保存数据，如果以上有一个出错那么全部不执行
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false });
+            }
+            return Json(new { success = true });
         }
     }
 }

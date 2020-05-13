@@ -39,9 +39,10 @@ namespace WebApplication1
             services.AddDbContext<DataContext>(options => options.UseMySQL(Configuration.GetConnectionString("dbconn")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //将LoginService注入
-            //services.AddSingleton<LoginService>();
             services.AddSingleton<UserService>();
             services.AddScoped(typeof(LoginService));
+            //将Modify注入
+            services.AddSingleton<Modify>();
 
             //将中间件注入到容器中
             services.AddScoped<LoginMiddleware>();

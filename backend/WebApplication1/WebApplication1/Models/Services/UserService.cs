@@ -29,6 +29,11 @@ namespace WebApplication1.Models.Services
         {
             return loginedToken.ContainsKey(user);
         }
+        //根据token返回user名字
+        public string FindUser(long token)
+        {
+            return loginedUsers[token].UserName;
+        }
 
         public bool ValidToken(long token)
         {

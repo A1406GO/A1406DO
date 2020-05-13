@@ -27,11 +27,11 @@ namespace WebApplication1.Middleware
         
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            //if (context.Request.Path == new PathString("/login"))
-            //{
-            //    await next?.Invoke(context);
-            //    return;
-            //}
+            if (context.Request.Path == new PathString("/login"))
+            {
+                await next?.Invoke(context);
+                return;
+            }
             if (whiteList.Contains(context.Request.Path))
             {
                 await next?.Invoke(context);
