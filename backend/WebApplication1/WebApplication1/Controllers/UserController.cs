@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
 using WebApplication1.Models.Services;
+using WebApplication1.Extensions;
+
 
 namespace WebApplication1.Controllers
 {
@@ -24,8 +26,15 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public List<UserInfo> Get()
+        public IActionResult Get()
         {
+
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
+
             _context.Database.EnsureCreated();
             var users = _context.UserInfo;
             List<UserInfo> items = new List<UserInfo>();
@@ -33,12 +42,18 @@ namespace WebApplication1.Controllers
             {
                 items.Add(item);
             }
-            return items;
+            return Json(items);
         }
 
         [HttpGet]
-        public List<UserInfo> GetById(int id)
+        public IActionResult GetById(int id)
         {
+
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
             _context.Database.EnsureCreated();
             var users = _context.UserInfo.Where(s => s.ID == id).ToList();
             List<UserInfo> items = new List<UserInfo>();
@@ -46,7 +61,7 @@ namespace WebApplication1.Controllers
             {
                 items.Add(item);
             }
-            return items;
+            return Json(items);
         }
 
 
@@ -60,6 +75,17 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { sucess = false });
             }
+
+
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
+
+
+
+
 
             _context.Add(NewUser);
 
@@ -86,6 +112,11 @@ namespace WebApplication1.Controllers
         public IActionResult DeleteById(int id)
         {
             var state = false;
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
             var u = _context.UserInfo.SingleOrDefault(s => s.ID == id);
             if (u != null)
             {
@@ -110,10 +141,18 @@ namespace WebApplication1.Controllers
         public IActionResult UpdataById(int id, [FromBody]UserInfo NewUser)
         {
             var u = _context.UserInfo.Update(NewUser);
+
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
+
             if (u == null)
             {
                 return Json(new { sucess = false });
             }
+
 
             try
             {
@@ -137,6 +176,11 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult DataChange([FromBody]ChangedUserData Data)
         {
+            var user = this.GetAuthUser();
+            if (user.Power != 2)
+            {
+                return StatusCode(401);
+            }
             //分别获取增加，删除，更新数据的信息
             List<UserInfo> AdduserInfos = Data.AdduserInfos;
             List<UserInfo> DeleteuserInfos = Data.DeleteuserInfos;

@@ -20,6 +20,7 @@ namespace WebApplication1.Controllers
         public LoginController(LoginService loginService,UserService userService)
         {
             this.loginService = loginService;
+            this.userService = userService;
         }
         //真正的调用的判断函数，返回的是json
         //https://localhost:5001/Login/?username=1&password=1

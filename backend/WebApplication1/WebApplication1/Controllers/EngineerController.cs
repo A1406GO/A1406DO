@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
 using WebApplication1.Models.Services;
+using WebApplication1.Extensions;
 
 namespace WebApplication1.Controllers
 {
@@ -26,8 +27,15 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public List<EngineerInfo> Get()
+        public IActionResult Get()
         {
+
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
             _context.Database.EnsureCreated();
             var users = _context.EngineerInfo;
             List<EngineerInfo> items = new List<EngineerInfo>();
@@ -35,14 +43,20 @@ namespace WebApplication1.Controllers
             {
                 items.Add(item);
             }
-            return items;
+            return Json(items);
         }
 
 
         [HttpGet]
-        public List<EngineerInfo> GetById(int id)
+        public IActionResult GetById(int id)
         {
-            //var providedApiKey = Request.Headers["testtoken"].ToString();
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
+
             _context.Database.EnsureCreated();
             var users = _context.EngineerInfo.Where(s => s.ID == id).ToList(); 
             List<EngineerInfo> items = new List<EngineerInfo>();
@@ -50,13 +64,20 @@ namespace WebApplication1.Controllers
             {
                 items.Add(item);
             }
-            return items;
+            return Json(items);
         }
 
 
         [HttpGet]
-        public List<EngineerInfo> GetByName(string name)
+        public IActionResult GetByName(string name)
         {
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
+
             _context.Database.EnsureCreated();
             var users = _context.EngineerInfo.Where(s => s.Name == name).ToList();
             List<EngineerInfo> items = new List<EngineerInfo>();
@@ -64,7 +85,7 @@ namespace WebApplication1.Controllers
             {
                 items.Add(item);
             }
-            return items;
+            return Json(items);
         }
 
         [HttpPost]
@@ -109,11 +130,15 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Add([FromBody]EngineerInfo Newengineer)
         {
-            var state = GetById(Newengineer.ID);
-            if (state.Count != 0) 
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
             {
-                return Json(new { success = false });
+                return StatusCode(401);
             }
+
+
+
+
             try
             {
                 _context.Add(Newengineer);
@@ -142,6 +167,16 @@ namespace WebApplication1.Controllers
         {
             var state = false;
             var u = _context.EngineerInfo.SingleOrDefault(s => s.ID == id);
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
+
+
+
+
             if (u != null)
             {
                 _context.EngineerInfo.Remove(u);
@@ -170,6 +205,14 @@ namespace WebApplication1.Controllers
             var state = false;
             var users = _context.EngineerInfo.ToList();
 
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
+
+
             foreach (var item in users)
             {
                 _context.EngineerInfo.Remove(item);
@@ -194,6 +237,12 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult UpdataById(int id,[FromBody]EngineerInfo Newengineer)
         {
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
             var u = _context.EngineerInfo.Update(Newengineer);
             if (u == null) 
             {
@@ -215,13 +264,21 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult DataChange([FromBody]ChangedEngineerData Data)
         {
+            var user = this.GetAuthUser();
+            if (user.Power != 1)
+            {
+                return StatusCode(401);
+            }
+
+
+
             //分别获取增加，删除，更新数据的信息
             List<EngineerInfo> AddengineerInfos = Data.AddengineerInfos;
             List<EngineerInfo> DeleteengineerInfos = Data.DeleteengineerInfos;
             List<EngineerInfo> UpdataengineerInfos = Data.UpdataengineerInfos;
             try
             {
-                //获取token
+                //获取header中的token
                 var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
                 //添加数据
                 foreach (var item in AddengineerInfos)
@@ -263,7 +320,6 @@ namespace WebApplication1.Controllers
             }
             return Json(new { success = true });
         }
-
 
     }
 }
