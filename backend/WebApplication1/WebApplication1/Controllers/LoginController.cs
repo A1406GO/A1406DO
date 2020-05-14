@@ -26,6 +26,32 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult Index(string username,string password)
         {
+            if (this.HttpContext.Request.Headers.TryGetValue("Authorization", out var tokenstr))
+            {
+                if (long.TryParse(tokenstr.ToString(), out var token))
+                {
+                    try
+                    {
+                        var user = userService.FindUser(token);
+                        return Json(new { result = true, token = token, name = user.HumanName, power = user.Power });
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                {
+                    return Json(new { result = false, info = "无效的token" });
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                return Json(new { result = false, info = "帐号或密码不能为空" });
+            }
+
             //获取结果
             try
             {
