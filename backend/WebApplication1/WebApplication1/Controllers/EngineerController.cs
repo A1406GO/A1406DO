@@ -142,12 +142,25 @@ namespace WebApplication1.Controllers
         {
             var state = false;
             var u = _context.EngineerInfo.SingleOrDefault(s => s.ID == id);
-            if(u!=null)
+            if (u != null)
             {
                 _context.EngineerInfo.Remove(u);
                 state = _context.SaveChanges() > 0;
             }
+
+            if (state == true)
+            {
+                //成功时执行以下操作
+                //获取header中的token
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //获取日志信息
+                ModifyInfo NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", 1, providedApiKey);
+                //保存日志信息
+                _context.Add(NewModify);
+            }
+
             return Json(new { success = state });
+
         }
 
 
@@ -162,18 +175,39 @@ namespace WebApplication1.Controllers
                 _context.EngineerInfo.Remove(item);
                 state = _context.SaveChanges() > 0;
             }
+
+            if (state == true)
+            {
+                //成功时执行以下操作
+                //获取header中的token
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //获取日志信息
+                ModifyInfo NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", users.Count(), providedApiKey);
+                //保存日志信息
+                _context.Add(NewModify);
+            }
+
             return Json(new { success = state });
         }
 
         //https://localhost:5001/Engineer/Put?id=11
         [HttpPost]
-        public IActionResult Put(int id,[FromBody]EngineerInfo Newengineer)
+        public IActionResult UpdataById(int id,[FromBody]EngineerInfo Newengineer)
         {
             var u = _context.EngineerInfo.Update(Newengineer);
             if (u == null) 
             {
                 return Json(new { success = false });
             }
+
+            //成功时执行以下操作
+            //获取header中的token
+            var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+            //获取日志信息
+            ModifyInfo NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", 1, providedApiKey);
+            //保存日志信息
+            _context.Add(NewModify);
+
             return Json(new { success = _context.SaveChanges() > 0 });
         }
 
@@ -213,7 +247,7 @@ namespace WebApplication1.Controllers
                 _context.ModifyInfo.Add(NewModify);
 
                 //获取并保存删除数据的日志的信息
-                NewModify = modify.DelectInfo(DateTime.Now, "Engineer", DeleteengineerInfos.Count(), providedApiKey);
+                NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteengineerInfos.Count(), providedApiKey);
                 _context.ModifyInfo.Add(NewModify);
                 //获取并保存更新数据的日志的信息
                 NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdataengineerInfos.Count(), providedApiKey);
@@ -221,14 +255,8 @@ namespace WebApplication1.Controllers
 
                 //保存数据，如果以上有一个出错那么全部不执行
                 _context.SaveChanges();
-
-
-
-
-
-
-                //_context.SaveChanges();
             }
+
             catch (Exception e)
             {
                 return Json(new { success = false });
