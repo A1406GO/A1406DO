@@ -60,9 +60,24 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { sucess = false });
             }
+
             _context.Add(NewUser);
 
-            return Json(new { sucess = _context.SaveChanges() > 0 });
+            try
+            {
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //获取日志信息
+                ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "User", 1, providedApiKey);
+                //保存日志信息
+                _context.Add(NewModify);
+                _context.SaveChanges();
+            }
+            catch(Exception e)
+            {
+                return Json(new { sucess = false });
+            }
+
+            return Json(new { sucess = true });
 
         }
 
@@ -77,19 +92,44 @@ namespace WebApplication1.Controllers
                 _context.UserInfo.Remove(u);
                 state = _context.SaveChanges() > 0;
             }
+
+            if(state==true)
+            {
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //获取日志信息
+                ModifyInfo NewModify = modify.DeleteInfo(DateTime.Now, "User", 1, providedApiKey);
+                //保存日志信息
+                _context.Add(NewModify);
+            }
+
             return Json(new { sucess = state });
         }
 
 
         [HttpPost]
-        public IActionResult Put(int id, [FromBody]UserInfo NewUser)
+        public IActionResult UpdataById(int id, [FromBody]UserInfo NewUser)
         {
             var u = _context.UserInfo.Update(NewUser);
             if (u == null)
             {
                 return Json(new { sucess = false });
             }
-            return Json(new { sucess = _context.SaveChanges() > 0 });
+
+            try
+            {
+                var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
+                //获取日志信息
+                ModifyInfo NewModify = modify.UpdataInfo(DateTime.Now, "User", 1, providedApiKey);
+                //保存日志信息
+                _context.Add(NewModify);
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return Json(new { sucess = false });
+            }
+
+            return Json(new { sucess = true });
         }
 
 
@@ -128,7 +168,7 @@ namespace WebApplication1.Controllers
                 _context.Add(NewModify);
 
                 //获取删除数据的日志信息
-                NewModify = modify.DelectInfo(DateTime.Now, "Engineer", DeleteuserInfos.Count(), providedApiKey);
+                NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteuserInfos.Count(), providedApiKey);
                 //日志信息加入
                 _context.Add(NewModify);
 

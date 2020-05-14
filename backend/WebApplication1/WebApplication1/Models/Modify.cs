@@ -23,7 +23,7 @@ namespace WebApplication1.Models
             return NewModify;
         }
         //删除数据，调用该函数，返回日志信息
-        public ModifyInfo DelectInfo(DateTime Time, string Table, int Num, long Token)//时间 操作的表 数量 Token
+        public ModifyInfo DeleteInfo(DateTime Time, string Table, int Num, long Token)//时间 操作的表 数量 Token
         {
             ModifyInfo NewModify = new ModifyInfo();
             NewModify.Time = Time;
