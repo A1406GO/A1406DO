@@ -12,7 +12,8 @@ namespace WebApplication1.Models
         public int ID { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string ControllerName { get; set; }
+        [Column("ControllerName")]
+        public string HumanName { get; set; }
         public int Power { get; set; }
 
         public override int GetHashCode()

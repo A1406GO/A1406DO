@@ -22,7 +22,7 @@ namespace WebApplication1.Services
             this._context = context;
         }
         //登录函数，输入名字密码，如果正确返回一个token，否则反正错误的原因
-        public string Login(string username,string password)
+        public long Login(string username,string password)
         {
             _context.Database.EnsureCreated();
             //获取账号
@@ -47,7 +47,7 @@ namespace WebApplication1.Services
                 token ^= random.Next();
             }
             loginedUsers.Add(token, user);
-            return token.ToString();
+            return token;
         }
 
         //public bool ValidToken(long token)

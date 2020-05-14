@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Services;
 using WebApplication1.Models;
+using WebApplication1.Models.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -12,10 +13,11 @@ namespace WebApplication1.Controllers
     [Produces("application/json")]
     public class LoginController: Controller
     {
-        //设置自己的变量登录服务类
+
         private LoginService loginService;
-        //初始化，将内存中的登录服务类加载进入自己的变量中
-        public LoginController(LoginService loginService)
+        private UserService userService;
+
+        public LoginController(LoginService loginService,UserService userService)
         {
             this.loginService = loginService;
         }
@@ -28,7 +30,8 @@ namespace WebApplication1.Controllers
             try
             {
                 var result = loginService.Login(username, password);
-                var Result = new { result = true, token = result };
+                var user = userService.FindUser(result);
+                var Result = new { result = true, token = result, name = user.HumanName, power = user.Power };
                 return Json(Result);
             }
             catch(Exception e)
