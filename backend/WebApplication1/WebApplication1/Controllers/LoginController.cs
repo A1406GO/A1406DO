@@ -20,6 +20,7 @@ namespace WebApplication1.Controllers
         public LoginController(LoginService loginService,UserService userService)
         {
             this.loginService = loginService;
+            this.userService = userService;
         }
         //真正的调用的判断函数，返回的是json
         //https://localhost:5001/Login/?username=1&password=1
@@ -33,7 +34,7 @@ namespace WebApplication1.Controllers
                     try
                     {
                         var user = userService.FindUser(token);
-                        return Json(new { result = true, token = token, name = user.HumanName, power = user.Power });
+                        return Json(new { result = true, token = token.ToString(), name = user.HumanName, power = user.Power });
                     }
                     catch (Exception)
                     {
@@ -57,7 +58,7 @@ namespace WebApplication1.Controllers
             {
                 var result = loginService.Login(username, password);
                 var user = userService.FindUser(result);
-                var Result = new { result = true, token = result, name = user.HumanName, power = user.Power };
+                var Result = new { result = true, token = result.ToString(), name = user.HumanName, power = user.Power };
                 return Json(Result);
             }
             catch(Exception e)
