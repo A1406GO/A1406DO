@@ -36,13 +36,8 @@ namespace WebApplication1.Controllers
             }
 
             _context.Database.EnsureCreated();
-            var users = _context.UserInfo;
-            List<UserInfo> items = new List<UserInfo>();
-            foreach (var item in users)
-            {
-                items.Add(item);
-            }
-            return Json(items);
+            var users = _context.UserInfo.Where(u => u.Power == 1).ToList();
+            return Json(users);
         }
 
         [HttpGet]
@@ -56,12 +51,7 @@ namespace WebApplication1.Controllers
             }
             _context.Database.EnsureCreated();
             var users = _context.UserInfo.Where(s => s.ID == id).ToList();
-            List<UserInfo> items = new List<UserInfo>();
-            foreach (var item in users)
-            {
-                items.Add(item);
-            }
-            return Json(items);
+            return Json(users);
         }
 
 
