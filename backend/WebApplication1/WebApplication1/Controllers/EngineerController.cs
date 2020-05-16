@@ -276,39 +276,45 @@ namespace WebApplication1.Controllers
             List<EngineerInfo> AddengineerInfos = Data.Add;
             List<EngineerInfo> DeleteengineerInfos = Data.Delete;
             List<EngineerInfo> UpdataengineerInfos = Data.Update;
+            ModifyInfo NewModify;
             try
             {
                 //获取header中的token
                 var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
                 //添加数据
-                foreach (var item in AddengineerInfos)
+                if(AddengineerInfos!=null&&AddengineerInfos.Count!=0)
                 {
-                    _context.EngineerInfo.Add(item);
+                    foreach (var item in AddengineerInfos)
+                    {
+                        _context.EngineerInfo.Add(item);
+                    }
+                    //获取日志信息
+                    NewModify = modify.AddInfo(DateTime.Now, "Engineer", AddengineerInfos.Count(), providedApiKey);
+                    //保存日志信息
+                    _context.ModifyInfo.Add(NewModify);
                 }
                 //删除数据
-                foreach (var item in DeleteengineerInfos)
+                if(DeleteengineerInfos != null&&DeleteengineerInfos.Count != 0)
                 {
-                    var Deletedata = _context.EngineerInfo.SingleOrDefault(s => s.ID == item.ID);
-                    _context.EngineerInfo.Remove(Deletedata);
+                    foreach (var item in DeleteengineerInfos)
+                    {
+                        var Deletedata = _context.EngineerInfo.SingleOrDefault(s => s.ID == item.ID);
+                        _context.EngineerInfo.Remove(Deletedata);
+                    }
+                    NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteengineerInfos.Count(), providedApiKey);
+                    _context.ModifyInfo.Add(NewModify);
                 }
                 //更新数据
-                foreach (var item in UpdataengineerInfos)
+                if(UpdataengineerInfos!= null&&UpdataengineerInfos.Count != 0 )
                 {
-                    _context.EngineerInfo.Update(item);
+                    foreach (var item in UpdataengineerInfos)
+                    {
+                        _context.EngineerInfo.Update(item);
+                    }
+                    //获取并保存更新数据的日志的信息
+                    NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdataengineerInfos.Count(), providedApiKey);
+                    _context.ModifyInfo.Add(NewModify);
                 }
-
-                //获取并保存增加数据的日志的信息
-                //获取日志信息
-                ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "Engineer", AddengineerInfos.Count(), providedApiKey);
-                //保存日志信息
-                _context.ModifyInfo.Add(NewModify);
-
-                //获取并保存删除数据的日志的信息
-                NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteengineerInfos.Count(), providedApiKey);
-                _context.ModifyInfo.Add(NewModify);
-                //获取并保存更新数据的日志的信息
-                NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdataengineerInfos.Count(), providedApiKey);
-                _context.ModifyInfo.Add(NewModify);
 
                 //保存数据，如果以上有一个出错那么全部不执行
                 _context.SaveChanges();

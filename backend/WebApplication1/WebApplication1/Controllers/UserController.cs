@@ -175,43 +175,54 @@ namespace WebApplication1.Controllers
             List<UserInfo> AdduserInfos = Data.Add;
             List<UserInfo> DeleteuserInfos = Data.Delete;
             List<UserInfo> UpdatauserInfos = Data.Update;
+            ModifyInfo NewModify;
             try
             {
                 //获取token
                 var providedApiKey = long.Parse(Request.Headers["Authorization"].ToString());
                 //添加数据
-                foreach (var item in AdduserInfos)
+                if(AdduserInfos!=null&&AdduserInfos.Count!=0)
                 {
-                    item.Power = 1;
-                    _context.UserInfo.Add(item);
+                    foreach (var item in AdduserInfos)
+                    {
+                        item.Power = 1;
+                        _context.UserInfo.Add(item);
+                    }
+                    NewModify = modify.AddInfo(DateTime.Now, "User", AdduserInfos.Count(), providedApiKey);
+                    //日志信息加入
+                    _context.Add(NewModify);
                 }
                 //删除数据
-                foreach (var item in DeleteuserInfos)
+                if(DeleteuserInfos != null&&DeleteuserInfos.Count!=0)
                 {
-                    var Deletedata = _context.UserInfo.SingleOrDefault(s => s.ID == item.ID);
-                    _context.UserInfo.Remove(Deletedata);
+                    foreach (var item in DeleteuserInfos)
+                    {
+                        var Deletedata = _context.UserInfo.SingleOrDefault(s => s.ID == item.ID);
+                        _context.UserInfo.Remove(Deletedata);
+                    }
+
+                    //获取删除数据的日志信息
+                    NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteuserInfos.Count(), providedApiKey);
+                    //日志信息加入
+                    _context.Add(NewModify);
                 }
-                //更新数据
-                foreach (var item in UpdatauserInfos)
+
+                if(UpdatauserInfos != null&&UpdatauserInfos.Count!=0)
                 {
-                    item.Power = 1;
-                    _context.UserInfo.Update(item);
+                    //更新数据
+                    foreach (var item in UpdatauserInfos)
+                    {
+                        item.Power = 1;
+                        _context.UserInfo.Update(item);
+                    }
+                    //获取更新数据的日志信息
+                    NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdatauserInfos.Count(), providedApiKey);
+                    //日志信息加入
+                    _context.Add(NewModify);
                 }
                
-                //获取增加数据的日志信息
-                ModifyInfo NewModify = modify.AddInfo(DateTime.Now, "User", AdduserInfos.Count(), providedApiKey);
-                //日志信息加入
-                _context.Add(NewModify);
 
-                //获取删除数据的日志信息
-                NewModify = modify.DeleteInfo(DateTime.Now, "Engineer", DeleteuserInfos.Count(), providedApiKey);
-                //日志信息加入
-                _context.Add(NewModify);
 
-                //获取更新数据的日志信息
-                NewModify = modify.UpdataInfo(DateTime.Now, "Engineer", UpdatauserInfos.Count(), providedApiKey);
-                //日志信息加入
-                _context.Add(NewModify);
                 //保存数据，如果以上有一个出错那么全部不执行
                 _context.SaveChanges();
             }
