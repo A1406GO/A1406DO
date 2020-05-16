@@ -8,10 +8,10 @@ namespace WebApplication1.Models
     public class ChangedUserData
     {
         //需要执行添加的数据信息
-        public List<UserInfo> AdduserInfos { get; set; }
+        public List<UserInfo> Add { get; set; }
         //需要执行删除的数据信息
-        public List<UserInfo> DeleteuserInfos { get; set; }
+        public List<UserInfo> Delete { get; set; }
         //需要执行更新的数据信息
-        public List<UserInfo> UpdatauserInfos { get; set; }
+        public List<UserInfo> Update { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
             _context.Database.EnsureCreated();
@@ -47,7 +47,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
             _context.Database.EnsureCreated();
             var users = _context.UserInfo.Where(s => s.ID == id).ToList();
@@ -70,7 +70,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -105,7 +105,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
             var u = _context.UserInfo.SingleOrDefault(s => s.ID == id);
             if (u != null)
@@ -135,7 +135,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
             if (u == null)
@@ -169,12 +169,12 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 2)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
             //分别获取增加，删除，更新数据的信息
-            List<UserInfo> AdduserInfos = Data.AdduserInfos;
-            List<UserInfo> DeleteuserInfos = Data.DeleteuserInfos;
-            List<UserInfo> UpdatauserInfos = Data.UpdatauserInfos;
+            List<UserInfo> AdduserInfos = Data.Add;
+            List<UserInfo> DeleteuserInfos = Data.Delete;
+            List<UserInfo> UpdatauserInfos = Data.Update;
             try
             {
                 //获取token
@@ -182,6 +182,7 @@ namespace WebApplication1.Controllers
                 //添加数据
                 foreach (var item in AdduserInfos)
                 {
+                    item.Power = 1;
                     _context.UserInfo.Add(item);
                 }
                 //删除数据
@@ -193,6 +194,7 @@ namespace WebApplication1.Controllers
                 //更新数据
                 foreach (var item in UpdatauserInfos)
                 {
+                    item.Power = 1;
                     _context.UserInfo.Update(item);
                 }
                

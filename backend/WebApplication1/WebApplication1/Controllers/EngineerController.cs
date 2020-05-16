@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
             _context.Database.EnsureCreated();
@@ -53,7 +53,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -74,7 +74,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -133,7 +133,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -170,7 +170,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -208,7 +208,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
@@ -240,7 +240,7 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
             var u = _context.EngineerInfo.Update(Newengineer);
@@ -267,15 +267,15 @@ namespace WebApplication1.Controllers
             var user = this.GetAuthUser();
             if (user.Power != 1)
             {
-                return StatusCode(401);
+                return StatusCode(403);
             }
 
 
 
             //分别获取增加，删除，更新数据的信息
-            List<EngineerInfo> AddengineerInfos = Data.AddengineerInfos;
-            List<EngineerInfo> DeleteengineerInfos = Data.DeleteengineerInfos;
-            List<EngineerInfo> UpdataengineerInfos = Data.UpdataengineerInfos;
+            List<EngineerInfo> AddengineerInfos = Data.Add;
+            List<EngineerInfo> DeleteengineerInfos = Data.Delete;
+            List<EngineerInfo> UpdataengineerInfos = Data.Update;
             try
             {
                 //获取header中的token
