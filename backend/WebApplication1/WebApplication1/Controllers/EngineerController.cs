@@ -37,13 +37,8 @@ namespace WebApplication1.Controllers
             }
 
             _context.Database.EnsureCreated();
-            var users = _context.EngineerInfo;
-            List<EngineerInfo> items = new List<EngineerInfo>();
-            foreach (var item in users)
-            {
-                items.Add(item);
-            }
-            return Json(items);
+            var users = _context.EngineerInfo.ToList();
+            return Json(users);
         }
 
 
