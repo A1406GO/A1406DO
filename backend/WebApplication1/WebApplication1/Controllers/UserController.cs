@@ -217,7 +217,7 @@ namespace WebApplication1.Controllers
             }
             catch (Exception e)
             {
-                return Json(new { success = false });
+                return Json(new { success = false  ,errorinfo = e.ToString()});
             }
             return Json(new { success = true });
         }
