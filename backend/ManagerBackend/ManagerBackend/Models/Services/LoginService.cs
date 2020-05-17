@@ -36,10 +36,6 @@ namespace ManagerBackend.Services
             {
                 throw new Exception("密码不正确！");
             }
-            if(loginedUsers.ContainsUser(user))
-            {
-                throw new Exception("此用户已登录！");
-            }
             //成功则随机生成token
             long token = DateTime.Now.Ticks;
             while (loginedUsers.ContainsToken(token))

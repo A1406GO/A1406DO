@@ -18,6 +18,12 @@ namespace ManagerBackend.Models.Services
 
         public void Add(long token, UserInfo user)
         {
+            if (loginedToken.TryGetValue(user, out var t))
+            {
+                loginedUsers.Remove(t);
+                loginedToken.Remove(user);
+            }
+
             loginedUsers.Add(token, user);
             loginedToken.Add(user, token);
         }
