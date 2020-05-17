@@ -1,6 +1,7 @@
 /.vs
-/backend/WebApplication1/WebApplication1/bin
-/backend/WebApplication1/WebApplication1/obj
-/backend/WebApplication1/WebApplication1/appsettings.json
-/backend/WebApplication1/WebApplication1/appsettings.Development.json
-/backend/WebApplication1/.vs
+/backend/.vs
+/backend/ManagerBackend/.vs
+/backend/ManagerBackend/ManagerBackend/bin
+/backend/ManagerBackend/ManagerBackend/obj
+/backend/ManagerBackend/ManagerBackend/appsettings.json
+/backend/ManagerBackend/ManagerBackend/appsettings.Development.json
