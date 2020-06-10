@@ -11,6 +11,7 @@ using ManagerBackend.Extensions;
 namespace ManagerBackend.Controllers
 {
     [Produces("application/json")]
+    [Area("API")]
     //[Route("api/Engineer")]
     public class EngineerController: Controller
     {

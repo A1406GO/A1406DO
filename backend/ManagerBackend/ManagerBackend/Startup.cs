@@ -58,7 +58,7 @@ namespace ManagerBackend
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
@@ -70,9 +70,11 @@ namespace ManagerBackend
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapAreaRoute("api", "API", "api/{controller}/{action=Index}/{id?}");
+
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Home", action = "Index" });
             });
 
             context.Database.EnsureCreated();

@@ -15,10 +15,6 @@ namespace ManagerBackend.Middleware
         private LoginService loginService;
         private UserService userService;
 
-        private static HashSet<PathString> whiteList = new HashSet<PathString>()
-        {
-            new PathString("/login")
-        };
         public LoginMiddleware(LoginService loginService, UserService loginedUsers)
         {
             this.loginService = loginService;
@@ -27,16 +23,18 @@ namespace ManagerBackend.Middleware
         
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context.Request.Path == new PathString("/login"))
+            if (!context.Request.Path.StartsWithSegments(new PathString("/api")))
             {
                 await next?.Invoke(context);
                 return;
             }
-            if (whiteList.Contains(context.Request.Path))
+
+            if (context.Request.Path.StartsWithSegments(new PathString("/api/login")))
             {
                 await next?.Invoke(context);
                 return;
             }
+
 
             if ((!context.Request.Headers.TryGetValue("Authorization", out var result)) ||
                 (!long.TryParse(result.ToString(), out var token)) ||

@@ -11,6 +11,7 @@ namespace ManagerBackend.Controllers
 {
     //登录时调用的函数类
     [Produces("application/json")]
+    [Area("API")]
     public class LoginController: Controller
     {
 
